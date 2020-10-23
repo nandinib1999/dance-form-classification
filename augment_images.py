@@ -3,6 +3,7 @@ import cv2
 import random
 import os
 import numpy as np
+random.seed(1)
 
 IMG_SIZE = 224
 
@@ -21,6 +22,9 @@ def horizontal_shift(img, ratio=0.0):
         img = img[:, :int(w-to_shift), :]
     if ratio < 0:
         img = img[:, int(-1*to_shift):, :]
+
+    if img.shape[0] == 0:
+      return None
     img = fill(img, h, w)
     return img
 
@@ -44,14 +48,15 @@ def vertical_shift(img, ratio=0.0):
         img = img[:int(h-to_shift), :, :]
     if ratio < 0:
         img = img[int(-1*to_shift):, :, :]
-    print(img.shape)
+
+    if img.shape[0] == 0:
+      return None
     img = fill(img, h, w)
     return img
 
 def generate_image(img, label, image_name, train_dir):
 	train_data = []
-	value = random.uniform(0.1, 0.7)
-	print("value ", value)
+	value = random.uniform(0, 0.7)
 	value2 = int(random.uniform(0, 60))
 	orientation = random.choice([-1, 0, 1])
 
@@ -63,19 +68,20 @@ def generate_image(img, label, image_name, train_dir):
 	aug_images = [vshift_img, hshift_img, flip_img, bright_img]
 	for i in range(len(aug_images)):
 		aimg = aug_images[i]
-		name_img = "aug_"+str(i)+"_"+image_name
-		try:
-			aimg = cv2.resize(aimg,(IMG_SIZE,IMG_SIZE))
-			cv2.imwrite(os.path.join(train_dir, name_img), aimg)
-			train_data.append([name_img, label])
-		except:
-			pass
+    if aimg not None:
+      name_img = "aug_"+str(i)+"_"+image_name
+      print('Writing ', name_img)
+      aimg = cv2.resize(aimg,(IMG_SIZE,IMG_SIZE))
+      cv2.imwrite(os.path.join(train_dir, name_img), aimg)
+      train_data.append([name_img, label])
 
 	return train_data
 
 
 def augment_train_images(train_dir):
 	list_of_images = os.listdir(train_dir)
+  list_of_images = [x for x in list_of_images if 'aug_' not in x and x.endswith('.jpg')]
+  print("Total Number of Images: ", len(list_of_images))
 	train = pd.read_csv('train.csv')
 	training_data = []
 	for image in list_of_images:
