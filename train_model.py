@@ -5,7 +5,7 @@ import pandas as pd
 from augment_images import augment_train_images
 import utils
 import argparse
-import model
+import models
 import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import LabelEncoder
@@ -22,8 +22,8 @@ print(tf.__version__)
 parser = argparse.ArgumentParser()
 parser.add_argument("--train_dataset", type=str, default='train.csv', help="Dataset with training image filenames and labels")
 parser.add_argument("--test_dataset", type=str, default="test.csv", help="Dataset with test image filenames and labels")
-parser.add_argument("--train_images_folder", type=str, default="/train", help="Folder where training images are stored.")
-parser.add_argument("--test_images_folder", type=str, default="/test", help="Folder where test images are stored.")
+parser.add_argument("--train_images_folder", type=str, default="train", help="Folder where training images are stored.")
+parser.add_argument("--test_images_folder", type=str, default="test", help="Folder where test images are stored.")
 parser.add_argument("--test_split_size", type=float, default=0.2, help="For train and test split")
 args = parser.parse_args()
 
@@ -54,7 +54,7 @@ def main():
 	print("Training Images Count: ", len(train_fnames))
 	print("Test Images Count: ", len(test_fnames))
 
-	train_data, train_labels = utils.load_training_data(train_fnames, augmented_train)
+	train_data, train_labels = utils.load_training_data(train_fnames, augmented_train, args.train_images_folder)
 	train_data = np.array(train_data)
 	train_labels = np.array(train_labels)
 	print("Shape of training data: ", train_data.shape)
@@ -62,7 +62,7 @@ def main():
 
 	le = LabelEncoder()
 	train_labels=le.fit_transform(train_labels)
-	numpy.save('classes.npy', le.classes_)
+	np.save('classes.npy', le.classes_)
 
 	X_train, X_val, y_train, y_val = train_test_split(train_data, train_labels, test_size=args.test_split_size, random_state=42)
 	y_train = to_categorical(y_train, num_classes = 8)
@@ -85,7 +85,7 @@ def main():
 	val_datagenerator.fit(X_val)
 
 	num_classes = 8
-	model = model.vgg_model(num_classes)
+	model = models.vgg_model(num_classes)
 
 	print(model.summary())
 
@@ -106,17 +106,17 @@ def main():
 	plt.plot(epochs, acc)
 	plt.plot(epochs, val_acc)
 	plt.title('Training and validation accuracy')
-	plt.imsave('statics/accuracy.png')
+	plt.savefig('statics/accuracy.png')
 	plt.imshow()
 
 	plt.figure(2)
 	plt.plot(epochs, loss)
 	plt.plot(epochs, val_loss)
 	plt.title('Training and validation loss')
-	plt.imsave('statics/validation.png')
+	plt.savefig('statics/validation.png')
 	plt.imshow()
 
-	model.save_weights('dance-form.h5')
+	model.save('dance-form.h5')
 
 if __name__ == '__main__':
 	main()

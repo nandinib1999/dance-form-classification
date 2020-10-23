@@ -1,5 +1,5 @@
+import tensorflow as tf
 from tensorflow.keras.applications.vgg16 import VGG16
-from tensorflow.keras.preprocessing import image
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Model
 

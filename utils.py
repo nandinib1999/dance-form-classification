@@ -1,18 +1,21 @@
 import cv2
 import os
+import matplotlib.pyplot as plt
 
-def load_training_data(list_of_images, train):
+IMG_SIZE = 224
+
+def load_training_data(list_of_images, train, train_dir):
   train_data = [] 
   train_label = [] 
   for image in list_of_images:
-        image_path = os.path.join(train_dir, image)
-        img_array = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-        print(image_path)
-        new_array = cv2.resize(img_array,(IMG_SIZE,IMG_SIZE))
-        if image in list(train['Image']):
-            class_label = train.loc[train['Image'] == image, 'target'].values[0]
-            train_data.append(new_array)
-            train_label.append(class_label)
+      image_path = os.path.join(train_dir, image)
+      img_array = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+      print(image_path)
+      new_array = cv2.resize(img_array,(IMG_SIZE,IMG_SIZE))
+      if image in list(train['Image']):
+          class_label = train.loc[train['Image'] == image, 'target'].values[0]
+          train_data.append(new_array)
+          train_label.append(class_label)
   return train_data, train_label
 
 
