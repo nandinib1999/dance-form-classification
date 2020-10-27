@@ -107,14 +107,14 @@ def main():
 	plt.plot(epochs, val_acc)
 	plt.title('Training and validation accuracy')
 	plt.savefig('statics/accuracy.png')
-	plt.imshow()
+	plt.show()
 
 	plt.figure(2)
 	plt.plot(epochs, loss)
 	plt.plot(epochs, val_loss)
 	plt.title('Training and validation loss')
 	plt.savefig('statics/validation.png')
-	plt.imshow()
+	plt.show()
 
 	model.save('dance-form.h5')
 
